@@ -15,9 +15,13 @@ class AssignsController < ApplicationController
   end
 
   def destroy
+    #チームリーダーですか or もしくは自分自身ですか？
     assign = Assign.find(params[:id])
+    unless (current_user == assign.team.owner) || (current_user == assign.user)
+      redirect_to team_url(params[:team_id]), notice: "リーダーか本人以外は削除できません"
+      return
+    end
     destroy_message = assign_destroy(assign, assign.user)
-
     redirect_to team_url(params[:team_id]), notice: destroy_message
   end
 
